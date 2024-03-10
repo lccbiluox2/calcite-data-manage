@@ -37,12 +37,18 @@ public class CalciteVisit extends CalciteRulesBaseVisitor<SqlNode> {
 
     @Override
     public SqlNode visitLoadStmt(CalciteRulesParser.LoadStmtContext ctx) {
+        // 获取两边的数据源信息并且进行封装
         CalciteRulesParser.LoadFromStmtContext loadFromStmtContext = ctx.loadFromStmt();
         CalciteRulesParser.LoadFromStmtContext loadToStmtContext = ctx.loadFromStmt();
+
+        // 构建 源信息
         SqlLoadSource loadFromSource = new SqlLoadSource(new SqlIdentifier(loadFromStmtContext.IDENTIFIER().getText(), pos),
                 loadFromStmtContext.STRING().getText());
+        // 构建 目的信息
         SqlLoadSource loadToSource = new SqlLoadSource(new SqlIdentifier(loadToStmtContext.IDENTIFIER().getText(), pos),
                 loadToStmtContext.STRING().getText());
+
+        // 构建列信息
         List<TerminalNode> identifier = ctx.loadColumns().columnsItem().IDENTIFIER();
         SqlNodeList sqlNodeList = new SqlNodeList(pos);
         for (int i = 0; i <identifier.size() ; i+=2) {

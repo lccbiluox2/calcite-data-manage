@@ -54,6 +54,7 @@ class RedisSchema extends AbstractSchema {
 
   @Override
   protected Map<String, Table> getTableMap() {
+    System.out.println("tableMap->"+tableMap);
     JsonCustomTable[] jsonCustomTables = new JsonCustomTable[tables.size()];
     Set<String> tableNames = Arrays.stream(tables.toArray(jsonCustomTables))
         .map(e -> e.name).collect(Collectors.toSet());
@@ -61,6 +62,7 @@ class RedisSchema extends AbstractSchema {
         ImmutableSet.copyOf(tableNames),
         CacheBuilder.newBuilder()
             .build(CacheLoader.from(this::table)));
+    System.out.println("tableMap->"+tableMap);
     return tableMap;
   }
 

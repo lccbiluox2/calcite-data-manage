@@ -16,6 +16,8 @@
  */
 package cn.com.ptpress.cdm.ds.redis;
 
+import java.util.StringJoiner;
+
 /**
  * Set the redis config.
  */
@@ -46,5 +48,15 @@ public class RedisConfig {
 
   public String getPassword() {
     return password;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", RedisConfig.class.getSimpleName() + "[", "]")
+            .add("host='" + host + "'")
+            .add("port=" + port)
+            .add("database=" + database)
+            .add("password='" + password + "'")
+            .toString();
   }
 }

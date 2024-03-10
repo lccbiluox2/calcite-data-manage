@@ -45,6 +45,7 @@ public class RedisTableFactory implements TableFactory {
     final RedisSchema redisSchema = schema.unwrap(RedisSchema.class);
     final RelProtoDataType protoRowType =
         rowType != null ? RelDataTypeImpl.proto(rowType) : null;
+    System.out.println("准备创建redis表:"+tableName);
     return RedisTable.create(redisSchema, tableName, operand, protoRowType);
   }
 }

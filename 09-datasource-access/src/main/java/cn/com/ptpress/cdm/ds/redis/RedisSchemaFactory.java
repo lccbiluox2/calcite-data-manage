@@ -17,6 +17,7 @@
 package cn.com.ptpress.cdm.ds.redis;
 
 import com.google.common.base.Preconditions;
+import org.apache.calcite.model.JsonCustomTable;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaFactory;
 import org.apache.calcite.schema.SchemaPlus;
@@ -32,29 +33,38 @@ import java.util.Map;
  */
 @SuppressWarnings("UnusedDeclaration")
 public class RedisSchemaFactory implements SchemaFactory {
-  // public constructor, per factory contract
-  public RedisSchemaFactory() {
-  }
+    // public constructor, per factory contract
+    public RedisSchemaFactory() {
+    }
 
-  @Override
-  public Schema create(SchemaPlus schema, String name,
-                       Map<String, Object> operand) {
-    Preconditions.checkArgument(operand.get("tables") != null,
-        "tables must be specified");
-    Preconditions.checkArgument(operand.get("host") != null,
-        "host must be specified");
-    Preconditions.checkArgument(operand.get("port") != null,
-        "port must be specified");
-    Preconditions.checkArgument(operand.get("database") != null,
-        "database must be specified");
+    @Override
+    public Schema create(SchemaPlus schema, String name,
+                         Map<String, Object> operand) {
+        Preconditions.checkArgument(operand.get("tables") != null,
+                "tables must be specified");
+        Preconditions.checkArgument(operand.get("host") != null,
+                "host must be specified");
+        Preconditions.checkArgument(operand.get("port") != null,
+                "port must be specified");
+        Preconditions.checkArgument(operand.get("database") != null,
+                "database must be specified");
 
-    @SuppressWarnings("unchecked") List<Map<String, Object>> tables =
-        (List) operand.get("tables");
-    String host = operand.get("host").toString();
-    int port = (int) operand.get("port");
-    int database = Integer.parseInt(operand.get("database").toString());
-    String password = operand.get("password") == null ? null
-        : operand.get("password").toString();
-    return new RedisSchema(host, port, database, password, tables);
-  }
+        @SuppressWarnings("unchecked") List<Map<String, Object>> tables =
+                (List) operand.get("tables");
+        String host = operand.get("host").toString();
+        int port = (int) operand.get("port");
+        int database = Integer.parseInt(operand.get("database").toString());
+        String password = operand.get("password") == null ? null
+                : operand.get("password").toString();
+        System.out.println("准备创建schema:host=" + host + " port=" + port
+                + " database=" + database + " tables=" + tables.size());
+
+        for (int i = 0; i < tables.size(); i++) {
+            org.apache.calcite.model.JsonCustomTable mapItem = (JsonCustomTable) tables.get(i);
+
+            String name1 = mapItem.name;
+            System.out.println("mapItem.name->"+mapItem.name);
+        }
+        return new RedisSchema(host, port, database, password, tables);
+    }
 }

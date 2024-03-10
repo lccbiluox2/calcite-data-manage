@@ -29,12 +29,14 @@ public class RedisServerStart {
         try {
             redisServer = new RedisServer(PORT);
             redisServer.start();
+            System.out.println("redis 已经启动完成");
+
             JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
             jedisPoolConfig.setMaxTotal(10);
             pool = new JedisPool(jedisPoolConfig, HOST, PORT);
             makeData();
-            System.out.println("redis 已经启动完成");
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception(e.getMessage());
         }
     }
@@ -53,6 +55,7 @@ public class RedisServerStart {
      * 制造相关数据
      */
     private void makeData() {
+        System.out.println("添加数据..");
         pool.getResource().lpush("stu_01", "{\"name\":\"小明\",\"score\":90}","{\"name\":\"小红\",\"score\":80}");
     }
 

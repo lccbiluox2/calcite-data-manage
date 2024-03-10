@@ -27,9 +27,11 @@ public class PostgreSqlSchemaFactory implements SchemaFactory {
             final ResultSet rs = stmt.executeQuery("select table_name\n" +
                     "from information_schema.tables\n" +
                     "where table_schema = 'public'");
+            System.out.println("准备查询PG系统表信息...");
             Map<String, Table> tableMap = new HashMap<>();
             while (rs.next()) {
                 final String table = rs.getString(1);
+                System.out.println("准备封装表信息table:" + table);
                 tableMap.put(table.toUpperCase(), new PostgreSqlTable(getColumns(conn, table), info));
             }
             return new PostgreSqlSchema(tableMap);
@@ -39,6 +41,7 @@ public class PostgreSqlSchemaFactory implements SchemaFactory {
     }
 
     private List<CdmColumn> getColumns(Connection conn, String table) throws SQLException {
+        System.out.println("准备获取表字段信息...");
         final Statement stmt = conn.createStatement();
         final ResultSet rs = stmt.executeQuery(String.format("select column_name, data_type\n" +
                 "from information_schema.columns\n" +
@@ -46,8 +49,10 @@ public class PostgreSqlSchemaFactory implements SchemaFactory {
                 "  and table_name = '%s'", table));
         List<CdmColumn> columns = new ArrayList<>();
         while (rs.next()) {
-            columns.add(new CdmColumn(rs.getString("column_name"),
-                    typeMap(pureType(rs.getString("data_type")))));
+            String column_name = rs.getString("column_name");
+            String data_type = rs.getString("data_type");
+            System.out.println("获取表字段信息...column_name="+column_name +" data_type="+data_type);
+            columns.add(new CdmColumn(column_name, typeMap(pureType(data_type))));
         }
         return columns;
     }

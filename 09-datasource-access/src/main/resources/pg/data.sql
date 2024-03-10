@@ -1,6 +1,5 @@
-CREATE TABLE films
+CREATE TABLE films3
 (
-    code char(5)
+    "CODE_NAME" varchar(30)
 );
-INSERT INTO films
-VALUES ('movie');
+INSERT INTO films3 VALUES ('movie');

@@ -12,6 +12,7 @@ import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.util.NlsString;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,7 +103,10 @@ public class PostgreSqlFilter extends Filter implements IPostgreSqlRel {
         final RexNode left = call.operands.get(0);
         final RexNode right = call.operands.get(1);
         String expression = translateBinary(op, left, right);
-        if (expression != null) return expression;
+        if (expression != null) {
+            System.out.println("出现bug的地方:" + expression);
+            return expression;
+        }
         expression = translateBinary(rop, right, left);
         if (expression != null) return expression;
         throw new RuntimeException(String.format("无法转换 op=%s, call=%s", op, call));
@@ -127,7 +131,7 @@ public class PostgreSqlFilter extends Filter implements IPostgreSqlRel {
     }
 
     private String translateOp(String op, String name, RexNode right) {
-        return String.format("%s %s %s", name, op, translateRexNode(right, null));
+        return String.format("\"%s\" %s '%s'", name, op, translateRexNode(right, null));
     }
 
     private String translateRexNode(RexNode right, String name) {
@@ -147,9 +151,27 @@ public class PostgreSqlFilter extends Filter implements IPostgreSqlRel {
         return "";
     }
 
+    /**
+     * todo: 2024/3/10 20:54 九师兄
+     *
+     * literal = {RexLiteral@7001} "'movie':VARCHAR"
+     *  value = {NlsString@7013} "_ISO-8859-1'movie'"
+     *   stringValue = "movie"
+     *   bytesValue = null
+     *   charsetName = "ISO-8859-1"
+     *   charset = {ISO_8859_1@7042} "ISO-8859-1"
+     *   collation = {SqlCollation@7034} "COLLATE ISO-8859-1$en_US$primary"
+     *  type = {BasicSqlType@7025} "VARCHAR"
+     *  typeName = {SqlTypeName@7026} "CHAR"
+     *  digest = "'movie':VARCHAR"
+     **/
     private Object literalValue(RexLiteral literal) {
 //        final Comparable value = RexLiteral.value(literal);
         // TODO
+        Comparable value = literal.getValue();
+        if(value instanceof NlsString){
+            return ((NlsString)value).getValue();
+        }
         return literal.getValue();
     }
 

@@ -34,17 +34,20 @@ public class PostgreSqlTable extends AbstractQueryableTable implements Translata
 
     @Override
     public <T> Queryable<T> asQueryable(QueryProvider queryProvider, SchemaPlus schema, String tableName) {
+        System.out.println("准备执行 pg PostgreSqlQueryable");
         return new PostgreSqlQueryable<>(info, queryProvider, schema, this, tableName);
     }
 
     @Override
     public RelNode toRel(RelOptTable.ToRelContext context, RelOptTable relOptTable) {
+        System.out.println("准备执行 pg toRel");
         final RelOptCluster cluster = context.getCluster();
         return new PostgreSqlTableScan(this, null, cluster, cluster.traitSetOf(IPostgreSqlRel.CONVENTION), relOptTable);
     }
 
     @Override
     public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+        System.out.println("准备获取pg RowType");
         List<String> names = new ArrayList<>();
         List<RelDataType> types = new ArrayList<>();
         columns.forEach(c -> {

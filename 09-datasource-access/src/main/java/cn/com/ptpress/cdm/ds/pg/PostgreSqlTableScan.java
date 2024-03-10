@@ -22,6 +22,7 @@ public class PostgreSqlTableScan extends TableScan implements IPostgreSqlRel {
         super(cluster, traitSet, ImmutableList.of(), table);
         this.postgreSqlTable = postgreSqlTable;
         this.projectRowType = projectRowType;
+        System.out.println("创建PostgreSqlTableScan...");
     }
 
     @Override
@@ -43,6 +44,7 @@ public class PostgreSqlTableScan extends TableScan implements IPostgreSqlRel {
 
     @Override
     public void register(RelOptPlanner planner) {
+        System.out.println("调用register...");
         planner.addRule(PostgreSqlToEnumerableConverterRule.INSTANCE);
         for (RelOptRule rule : PostgreSqlRules.RULES) {
             planner.addRule(rule);

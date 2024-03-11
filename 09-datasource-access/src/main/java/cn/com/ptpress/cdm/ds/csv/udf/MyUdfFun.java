@@ -1,8 +1,8 @@
-package cn.com.ptpress.cdm.ds.csv.udx;
+package cn.com.ptpress.cdm.ds.csv.udf;
 
 import org.apache.calcite.linq4j.function.Parameter;
 
-public class UDF {
+public class MyUdfFun {
     /**
      * 获取首字母
      * @param str 字符串

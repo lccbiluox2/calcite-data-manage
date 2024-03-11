@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "defaultSchema": "csv",
+  "schemas": [
+    {
+      "name": "CSV",
+      "type": "custom",
+      "factory": "cn.com.ptpress.cdm.ds.csv.CsvUdafParamsSchemaFactory",
+      "operand": {
+        "dataFile": "data_01.csv,data_02.csv"
+      },
+      "functions": [
+        {
+          "name": "EXAMPLE",
+          "methodName": "subString",
+          "className": "cn.com.ptpress.cdm.ds.csv.udx.MyUdafFun"
+        }
+      ]
+    }
+  ]
+}

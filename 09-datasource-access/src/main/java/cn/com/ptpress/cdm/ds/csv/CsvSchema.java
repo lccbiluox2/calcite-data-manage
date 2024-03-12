@@ -24,8 +24,11 @@ public class CsvSchema extends AbstractSchema {
         for (String dataFile : dataFiles.split(",")) {
             URL url = ClassLoader.getSystemClassLoader().getResource(dataFile);
             Source source = Sources.of(url);
-            tableMap.put(dataFile.split("\\.")[0], new CsvTable(source));
+            String s = dataFile.split("\\.")[0];
+            System.out.println("准备注册表名:"+s);
+            tableMap.put(s, new CsvTable(source));
         }
+        System.out.println("最终表名:"+tableMap);
         return tableMap;
     }
 }

@@ -49,7 +49,10 @@ public class CsvTable extends AbstractTable implements ScannableTable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return typeFactory.createStructType(Pair.zip(names, types));
+        System.out.println("最终类型name:"+names);
+        System.out.println("最终类型type:"+types);
+        RelDataType structType = typeFactory.createStructType(Pair.zip(names, types));
+        return structType;
     }
 
     @Override

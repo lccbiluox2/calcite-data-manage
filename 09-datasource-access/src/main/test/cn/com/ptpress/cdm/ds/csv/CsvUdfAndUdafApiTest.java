@@ -169,6 +169,40 @@ class CsvUdfAndUdafApiTest {
         connection.close();
     }
 
+    /**
+     * todo: 2024/3/12 23:07 九师兄
+     * 测试点：测试calcite 使用udaf 案例
+     *
+     * 文件路径:/Users/lcc/IdeaProjects/github/calcite-data-manage/09-datasource-access/target/classes/model_csv_udaf.json
+     * 准备注册udaf...
+     * 准备注册表名:data_01
+     * 准备注册表名:data_02
+     * 最终表名:{data_02=cn.com.ptpress.cdm.ds.csv.CsvTable@4d23015c, data_01=cn.com.ptpress.cdm.ds.csv.CsvTable@383f1975}
+     * 准备注册表名:data_01
+     * 准备注册表名:data_02
+     * 最终表名:{data_02=cn.com.ptpress.cdm.ds.csv.CsvTable@444548a0, data_01=cn.com.ptpress.cdm.ds.csv.CsvTable@3766c667}
+     * 最终类型name:[Id, Name, Score]
+     * 最终类型type:[VARCHAR, VARCHAR, INTEGER]
+     * 准备注册表名:data_01
+     * 准备注册表名:data_02
+     * 最终表名:{data_02=cn.com.ptpress.cdm.ds.csv.CsvTable@7103ab0, data_01=cn.com.ptpress.cdm.ds.csv.CsvTable@19ccca5}
+     * 最终类型name:[Id, Name, Score]
+     * 最终类型type:[VARCHAR, VARCHAR, INTEGER]
+     * 准备注册表名:data_01
+     * 准备注册表名:data_02
+     * 最终表名:{data_02=cn.com.ptpress.cdm.ds.csv.CsvTable@1a865273, data_01=cn.com.ptpress.cdm.ds.csv.CsvTable@288ca5f0}
+     * udaf初始化...
+     * udaf添加数据...
+     * udaf添加数据...
+     * udaf添加数据...
+     * udaf返回数据...
+     * select COLLECT_LIST("Name")  from "csv"."data_01"
+     * [小明, 小红, 小亮]
+     *
+     *
+     *  【Calcite】Calcite注册自定义UDAF案例
+     *  https://blog.csdn.net/qq_21383435/article/details/136663434
+     **/
     @Test
     void main5() throws SQLException {
         URL url = ClassLoader.getSystemClassLoader().getResource("model_csv_udaf.json");
@@ -177,7 +211,7 @@ class CsvUdfAndUdafApiTest {
         Connection connection =
                 DriverManager.getConnection("jdbc:calcite:model=" + path);
         Statement st = connection.createStatement();
-        csvTest.testSql(st, "select COLLECT_LIST(\"Name\") from \"CSV.data_01\"");
+        csvTest.testSql(st, "select COLLECT_LIST(\"Name\")  from \"csv\".\"data_01\"");
         connection.close();
     }
 

@@ -3,17 +3,16 @@
   "defaultSchema": "csv",
   "schemas": [
     {
-      "name": "CSV",
+      "name": "csv",
       "type": "custom",
-      "factory": "cn.com.ptpress.cdm.ds.csv.CsvUdafParamsSchemaFactory",
+      "factory": "cn.com.ptpress.cdm.ds.csv.udaf.CsvUdafParamsSchemaFactory",
       "operand": {
         "dataFile": "data_01.csv,data_02.csv"
       },
       "functions": [
         {
-          "name": "EXAMPLE",
-          "methodName": "subString",
-          "className": "cn.com.ptpress.cdm.ds.csv.udx.MyUdafFun"
+          "name": "COLLECT_LIST",
+          "className": "cn.com.ptpress.cdm.ds.csv.udaf.MyUdafFun"
         }
       ]
     }

@@ -94,6 +94,61 @@ class StreamLogTableTest {
         }
     }
 
+    /**
+     * todo: 2024/3/17 10:33 九师兄
+     * 测试点：测试使用流式处理连接kafka
+     *
+     * 日志> 消费条数:2
+     * 日志> 消费到数据:{"LOG_TIME":"小红","LEVEL":"80","MSG":"lcc"}
+     * 日志> 消费到数据:{"LOG_TIME":"小红","LEVEL":"80","MSG":"lcc"}
+     * LOG_TIME	LEVEL	MSG
+     * ------------------------------------------
+     * 日志> 准备获取下一条数据..
+     * 小红	80	lcc
+     * 日志> 准备获取下一条数据..
+     * 日志> 消费条数:2
+     * 日志> 消费到数据:{"LOG_TIME":"小红","LEVEL":"80","MSG":"lcc"}
+     * 日志> 消费到数据:{"LOG_TIME":"小红","LEVEL":"80","MSG":"lcc"}
+     * 小红	80	lcc
+     * 日志> 准备获取下一条数据..
+     * 小红	80	lcc
+     * 日志> 准备获取下一条数据..
+     * 日志> 消费条数:2
+     * 日志> 消费到数据:{"LOG_TIME":"小红","LEVEL":"80","MSG":"lcc"}
+     * 日志> 消费到数据:{"LOG_TIME":"小红","LEVEL":"80","MSG":"lcc"}
+     * 小红	80	lcc
+     *
+     * 可以看到正常打印了结果
+     *
+     * 【Calcite】Calcite简单流式处理-接入kafka案例
+     * https://blog.csdn.net/qq_21383435/article/details/136776379
+     **/
+    @Test
+    void testKafkaStreamWithCancel1() throws SQLException {
+        URL url = ClassLoader.getSystemClassLoader().getResource("model_kafka.json");
+        assert url != null;
+        try (Connection connection = DriverManager.getConnection("jdbc:calcite:model=" + url.getPath())) {
+            final Statement stmt = connection.createStatement();
+            final ResultSet rs = stmt.executeQuery("select STREAM * from LOG");
+            // 开启一个定时停止线程
+            new Thread(() -> {
+                try {
+                    // 5秒后停止
+                    TimeUnit.SECONDS.sleep(500);
+                    stmt.cancel();
+                } catch (InterruptedException | SQLException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+            // 永无止境的输出
+            try {
+                printResult(rs);
+            } catch (SQLException e) {
+                // ignore end
+            }
+        }
+    }
+
     @Test
     void testStreamGroupBy1() throws SQLException {
         URL url = ClassLoader.getSystemClassLoader().getResource("model.json");

@@ -149,9 +149,19 @@ class StreamLogTableTest {
         }
     }
 
+    /**
+     * todo: 2024/3/17 12:54 九师兄
+     * 测试点：测试流式聚合
+     *
+     * java.sql.SQLException: Error while executing SQL "select STREAM level,count(*) from LOG group by level": From line 1, column 39 to line 1, column 52: Streaming aggregation requires at least one monotonic expression in GROUP BY clause
+     *
+     * 	at org.apache.calcite.avatica.Helper.createException(Helper.java:56)
+     * 	at org.apache.calcite.avatica.Helper.createException(Helper.java:41)
+     *
+     **/
     @Test
     void testStreamGroupBy1() throws SQLException {
-        URL url = ClassLoader.getSystemClassLoader().getResource("model.json");
+        URL url = ClassLoader.getSystemClassLoader().getResource("model_agg.json");
         assert url != null;
         try (Connection connection = DriverManager.getConnection("jdbc:calcite:model=" + url.getPath())) {
             final Statement stmt = connection.createStatement();
@@ -161,14 +171,19 @@ class StreamLogTableTest {
         }
     }
 
+    /**
+     * todo: 2024/3/17 12:54 九师兄
+     * 测试点：测试流式聚合 单调表达式
+     *
+     * 这条SOL 语句的含义就变成了：统计每分钟各个日志级别的日志数量，并且是不断统计，数据不断产牛。
+     * 任是代码清单 12-14 所示的写法同样是有问题的，这个程序不 输出任何东西。这里其实 SQL 已经在运行了，
+     * 数据全部都存储在内存当中，不会返回。
+     **/
     @Test
     void testStreamGroupBy() throws SQLException {
-        URL url = ClassLoader.getSystemClassLoader().getResource("model.json");
+        URL url = ClassLoader.getSystemClassLoader().getResource("model_agg.json");
         assert url != null;
         try (Connection connection = DriverManager.getConnection("jdbc:calcite:model=" + url.getPath())) {
-//            final Statement stmt = connection.createStatement();
-//            final ResultSet rs = stmt.executeQuery("select STREAM level,count(*) from LOG group by level");
-
             final Statement stmt = connection.createStatement();
             final ResultSet rs = stmt.executeQuery("select STREAM FLOOR(log_time TO SECOND) as " +
                     "log_time,level,count(*) as c from LOG group by FLOOR(log_time TO SECOND)," +
@@ -177,6 +192,27 @@ class StreamLogTableTest {
         }
     }
 
+    /**
+     * todo: 2024/3/17 13:03 九师兄
+     * 测试点：测试流统计 并且输出
+     *
+     * LOG_TIME	LEVEL	C
+     * ------------------------------------------
+     * 2024-03-17 05:05:00.0	DEBUG	2
+     * 2024-03-17 05:05:00.0	WARN	3
+     * 2024-03-17 05:05:00.0	INFO	7
+     * 2024-03-17 05:05:00.0	ERROR	3
+     *
+     * LOG_TIME	LEVEL	C
+     * ------------------------------------------
+     * 2024-03-17 05:05:00.0	DEBUG	2
+     * 2024-03-17 05:05:00.0	WARN	3
+     * 2024-03-17 05:05:00.0	INFO	9
+     * 2024-03-17 05:05:00.0	ERROR	3
+     *
+     * 【Calcite】Calcite 流式处理、流式聚合查询案例
+     * https://blog.csdn.net/qq_21383435/article/details/136779997
+     **/
     @Test
     void testStreamGroupByCache() throws SQLException, InterruptedException {
         URL url = ClassLoader.getSystemClassLoader().getResource("model.json");

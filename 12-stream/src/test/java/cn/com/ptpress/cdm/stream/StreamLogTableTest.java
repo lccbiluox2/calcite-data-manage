@@ -26,9 +26,23 @@ class StreamLogTableTest {
         System.out.println();
     }
 
+    /**
+     * todo: 2024/3/17 09:23 九师兄
+     * 测试点：测试简答的流式处理
+     *
+     * LOG_TIME	LEVEL	MSG
+     * ------------------------------------------
+     * 2024-03-17 01:22:59.927	INFO	This is a INFO msg on 1710638579927
+     * 2024-03-17 01:23:00.809	DEBUG	This is a DEBUG msg on 1710638580809
+     * 2024-03-17 01:23:01.16	DEBUG	This is a DEBUG msg on 1710638581160
+     * 2024-03-17 01:23:01.969	ERROR	This is a ERROR msg on 1710638581969
+     *
+     * 【Calcite】Calcite简单流式处理案例
+     *  https://blog.csdn.net/qq_21383435/article/details/136722828
+     **/
     @Test
     void testStreamQuery() throws SQLException {
-        URL url = ClassLoader.getSystemClassLoader().getResource("model.json");
+        URL url = ClassLoader.getSystemClassLoader().getResource("model_simple.json");
         assert url != null;
         try (Connection connection = DriverManager.getConnection("jdbc:calcite:model=" + url.getPath())) {
             final Statement stmt = connection.createStatement();
@@ -38,9 +52,25 @@ class StreamLogTableTest {
         }
     }
 
+    /**
+     * todo: 2024/3/17 09:30 九师兄
+     * 测试点：测试流任务，主动5秒后停止查询
+     *
+     * LOG_TIME	LEVEL	MSG
+     * ------------------------------------------
+     * 2024-03-17 01:31:25.307	ERROR	This is a ERROR msg on 1710639085307
+     * ...
+     * 2024-03-17 01:31:29.373	WARN	This is a WARN msg on 1710639089373
+     * 2024-03-17 01:31:29.983	INFO	This is a INFO msg on 1710639089983
+     *
+     * 可以看到5秒后自动停止了
+     *
+     * 【Calcite】Calcite简单流式处理案例
+     *  https://blog.csdn.net/qq_21383435/article/details/136722828
+     **/
     @Test
     void testStreamWithCancel() throws SQLException {
-        URL url = ClassLoader.getSystemClassLoader().getResource("model.json");
+        URL url = ClassLoader.getSystemClassLoader().getResource("model_simple.json");
         assert url != null;
         try (Connection connection = DriverManager.getConnection("jdbc:calcite:model=" + url.getPath())) {
             final Statement stmt = connection.createStatement();
@@ -61,6 +91,18 @@ class StreamLogTableTest {
             } catch (SQLException e) {
                 // ignore end
             }
+        }
+    }
+
+    @Test
+    void testStreamGroupBy1() throws SQLException {
+        URL url = ClassLoader.getSystemClassLoader().getResource("model.json");
+        assert url != null;
+        try (Connection connection = DriverManager.getConnection("jdbc:calcite:model=" + url.getPath())) {
+            final Statement stmt = connection.createStatement();
+            final ResultSet rs = stmt.executeQuery("select STREAM level,count(*) from LOG group by level");
+
+            printResult(rs);
         }
     }
 
@@ -116,3 +158,4 @@ class StreamLogTableTest {
             }
         }
     }
+}
